@@ -33,11 +33,16 @@ The output of FindMyShift Reporter is stored in the `outputs` folder as `employe
 Usage
 -----
 
-To use FindMyShift Reporter, simply run the following command:
+To use FindMyShift Reporter, clone the repository and navigate to the directory.
 
-css
+```bash
+git clone https://github.com/tamus-cyber/findmyshift-reporter.git
+cd findmyshift-reporter
+```
 
-`python main.py`
+Then, simply run the following command:
+
+`python3 main.py`
 
 And voila! You'll have a report of all employees who haven't filled out their FindMyShift schedules. Happy reporting! 📊
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """ Python library for FindMyShift API to get the list of
     people who have not filled out their schedules"""
 
