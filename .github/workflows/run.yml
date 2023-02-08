@@ -1,11 +1,11 @@
 name: FindMyShift Reporter CI
 
 on:
-  push:
-    branches: ["main"]
-  # Change later to every Tuesday at 8:00 AM
-  # schedule:
-  #   - cron: "0 8 * * 2"
+  # push:
+  #   branches: ["main"]
+  # Run every Tuesday at 8:00 AM
+  schedule:
+    - cron: "0 8 * * 2"
 
 permissions:
   contents: read
