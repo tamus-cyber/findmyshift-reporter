@@ -22,7 +22,7 @@ def send_to_slack(slack_token: str, slack_channel: str, data: dict, **kwargs):
     """
     # Convert dict to bulleted list
     bulleted_list = '\n'.join([f'- {employee["display_name"]}' for employee in data])
-    slack_message = f'*Employees without shifts:*\n{bulleted_list}'
+    slack_message = f'*Employees with empty FindMyShift:*\n{bulleted_list}'
 
     # Setup Slack client
     client = WebClient(token=slack_token)
