@@ -10,6 +10,7 @@ Here's a rundown of the arguments you can use with FindMyShift Reporter:
 
 - `-f` or `--format`: Specify the output format. The options are `json`, `csv`, `html` and `txt`. The default is `json`.
 - `-d` or `--days`: Number of days to fetch. The default is 7 days.
+- `-a` or `--all`: Fetch all employees, including those who have filled out their schedules. The default is `False`.
 
 Prerequisites
 -------------
@@ -25,10 +26,32 @@ Additionally, you can set the following environment variables to configure the l
 
 You can also put these environment variables in a `.env` file, and FindMyShift Reporter will automatically pick them up.
 
+Settings
+--------
+
+FindMyShift Reporter has a few settings that you can configure in `settings.json`:
+
+```json
+{
+    "blacklist": [
+        # Blacklist of staff IDs to ignore
+        "staffIDXXXX",
+        "staffIDXXXX",
+        ...
+    ]
+    "aliases": {
+        # Aliases for staff IDs
+        "staffIDXXXX": "John Doe",
+        "staffIDXXXX": "Jane Doe",
+        ...
+    }
+}
+```
+
 Output
 ------
 
-The output of FindMyShift Reporter is stored in the `outputs` folder as `employees_without_shifts` with the correct file extension.
+The output of FindMyShift Reporter is stored in the `outputs` folder as `employees_without_shifts` with the correct file extension. If you used the `-a` or `--all` argument, the output will be stored in the `outputs` folder as `all_employees` with the correct file extension.
 
 Usage
 -----
