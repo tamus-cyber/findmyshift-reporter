@@ -1,7 +1,7 @@
 FindMyShift Reporter 🗓️
 ========================
 
-A Python tool that generates a list of employees who have not filled out their FindMyShift schedules. The tool has two components, `fms_lib.py` that contains all the necessary functions and a `main.py` that is the entry point of the program. The tool supports multiple output formats such as JSON, CSV, HTML and TXT.
+A Python tool that generates a list of employees who have not filled out their FindMyShift schedules. The tool has two components, `fms_lib.py` that contains all the necessary functions and a `main.py` that is the entry point of the program. The tool supports multiple output formats such as JSON, CSV, HTML and TXT. Additionally, the tool can send a Slack alert if there are employees who haven't filled out their schedules.
 
 Arguments
 ---------
@@ -11,6 +11,7 @@ Here's a rundown of the arguments you can use with FindMyShift Reporter:
 - `-f` or `--format`: Specify the output format. The options are `json`, `csv`, `html` and `txt`. The default is `json`.
 - `-d` or `--days`: Number of days to fetch. The default is 7 days.
 - `-a` or `--all`: Fetch all employees, including those who have filled out their schedules. The default is `False`.
+- `-s` or `--slack`: Send a Slack alert if there are employees who haven't filled out their schedules. The default is `False`.
 
 Prerequisites
 -------------
