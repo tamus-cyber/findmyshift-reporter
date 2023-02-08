@@ -69,6 +69,15 @@ Then, simply run the following command:
 
 And voila! You'll have a report of all employees who haven't filled out their FindMyShift schedules. Happy reporting! 📊
 
+Testing
+-------
+
+To keep environment clean during testing, there is a `docker-compose.yml` file that will create a container with all the necessary dependencies. To run the tests, simply run the following command:
+
+```bash
+docker-compose --env-file .env up && docker-compose rm -fsv
+```
+
 License
 -------
 
