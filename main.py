@@ -7,9 +7,33 @@ import json
 import csv
 import argparse
 from loguru import logger
+from slack_sdk import WebClient
 from dotenv import load_dotenv
 from fms_lib import get_employees_without_shifts, get_employees
 load_dotenv()
+
+
+def send_to_slack(slack_token: str, slack_channel: str, data: dict, **kwargs):
+    """Send data to Slack channel
+    Args:
+        slack_token (str): Slack token
+        slack_channel (str): Slack channel
+        data (dict): Data
+    """
+    # Convert dict to bulleted list
+    bulleted_list = '\n'.join([f'- {employee["display_name"]}' for employee in data])
+    slack_message = f'*Employees without shifts:*\n{bulleted_list}'
+
+    # Setup Slack client
+    client = WebClient(token=slack_token)
+    # Parse optional arguments
+    username = kwargs.get('username', 'FMS Shift Reporter')
+    icon_emoji = kwargs.get('icon_emoji', ':robot_face:')
+    logger.debug(slack_message)
+    # Send message to Slack channel
+    response = client.chat_postMessage(channel=slack_channel, text=slack_message, \
+                                       username=username, icon_emoji=icon_emoji)
+    assert response["ok"] # nosec B101
 
 
 def filter_employees(employees: list, blacklist: list, aliases: dict):
@@ -72,6 +96,7 @@ def main():
                         choices=['json', 'csv', 'html', 'txt'], default='json')
     parser.add_argument('-d', '--days', type=int, help='Number of days to fetch', default=7)
     parser.add_argument('-a', '--all', action='store_true', help='Get all employees')
+    parser.add_argument('-s', '--slack', action='store_true', help='Send to Slack')
     args = parser.parse_args()
 
     # Set up logging level using environment variable
@@ -79,7 +104,7 @@ def main():
 
     logger.info('Starting FindMyShift Shift Reporter...')
 
-    # Get API key and team ID from environment variable
+    # Get API keys and team ID from environment variable
     logger.info('Setting up environment variables...')
     api_key = os.getenv('API_KEY')
     team_id = os.getenv('TEAM_ID')
@@ -97,24 +122,34 @@ def main():
     # Export as [json|csv|html|text]
     if not os.path.exists('outputs'):
         os.mkdir('outputs')
-    
+
     # If --all flag is set, get all employees
     if args.all:
         logger.info('Getting all employees...')
         all_employees = get_employees(api_key, team_id)
         # Convert to {staff_id: XX, display_name: 'XX'} format
-        all_employees = [{ 'staff_id': employee['staffId'], 'display_name': employee['displayName'] } for employee in all_employees]
-        all_employees = filter_employees(all_employees, blacklist, aliases)
+        employees = [{ 'staff_id': employee['staffId'], 'display_name': employee['displayName'] } \
+            for employee in all_employees]
+        employees = filter_employees(employees, blacklist, aliases)
         logger.info('Exporting all employees...')
-        save_to_file(f'outputs/all_employees.{args.format}', all_employees, args.format)
+        save_to_file(f'outputs/all_employees.{args.format}', employees, args.format)
     else:
         # Get list of employees without shifts
         logger.info('Getting list of employees without shifts...')
-        employees_without_shifts = get_employees_without_shifts(api_key, team_id, args.days)
-        employees_without_shifts = filter_employees(employees_without_shifts, blacklist, aliases)
+        employees = get_employees_without_shifts(api_key, team_id, args.days)
+        employees = filter_employees(employees, blacklist, aliases)
         logger.info('Exporting employees without shifts...')
         save_to_file(   f'outputs/employees_without_shifts.{args.format}', \
-                        employees_without_shifts, args.format)
+                        employees, args.format)
+
+    if args.slack:
+        logger.info('Sending to Slack...')
+        slack_token = os.getenv('SLACK_TOKEN')
+        slack_channel = os.getenv('SLACK_CHANNEL')
+        slack_username = os.getenv('SLACK_USERNAME')
+        slack_icon_emoji = os.getenv('SLACK_ICON_EMOJI')
+        send_to_slack(  slack_token, slack_channel, employees, \
+                        username=slack_username, icon_emoji=slack_icon_emoji)
 
     logger.success('Done')
 

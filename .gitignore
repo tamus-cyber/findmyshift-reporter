@@ -167,3 +167,4 @@ cython_debug/
 # Specific to the project
 outputs/
 settings.json
+.secrets

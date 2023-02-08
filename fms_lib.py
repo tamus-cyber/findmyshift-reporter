@@ -106,10 +106,12 @@ def filter_employees(employees: list, shifts: list) -> list:
     # employees who have not filled out their schedules
     employees_without_shifts = set()
     for employee in employees:
-        # Check if the employee has a shift
-        if employee['staffId'] not in shifts:
-            # Add the employee to the list of employees who have not filled out their schedules
-            employees_without_shifts.add(Employee(employee['staffId'], employee['displayName']))
+        for shift in shifts:
+            if employee['staffId'] == shift['staffId']:
+                break
+        else:
+            employees_without_shifts.add(   Employee(staff_id=employee['staffId'], \
+                                            display_name=employee['displayName']))
 
     return list(employees_without_shifts)
 
