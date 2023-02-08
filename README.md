@@ -24,6 +24,13 @@ Additionally, you can set the following environment variables to configure the l
 
 - `LOG_LEVEL`: Logging level for the program. The default is `INFO`.
 
+If you opt to use Slack alerting, you'll need to set the following environment variables:
+
+- `SLACK_CHANNEL`: The Slack channel to send the alert to.
+- `SLACK_TOKEN`: The Slack token to use for sending the alert.
+- `SLACK_USERNAME`(optional): The Slack username to use for sending the alert.
+- `SLACK_ICON_EMOJI`(optional): The Slack icon emoji to use for sending the alert.
+
 You can also put these environment variables in a `.env` file, and FindMyShift Reporter will automatically pick them up.
 
 Settings
