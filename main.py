@@ -85,6 +85,18 @@ def save_to_file(filename: str, data: dict, output_format: str):
                 for employee in data:
                     file.write(f'{employee["display_name"]}\n')
 
+def convert_settings_to_secret(settings: dict) -> str:
+    """Convert settings.json to GitHub secret
+    Args:
+        settings (dict): Settings
+    """
+    # JSON dumps flat
+    secret = json.dumps(settings, separators=(',', ':'))
+
+    # Add beginning and trailing single quotes
+    secret = f"'{secret}'"
+
+    return secret
 
 @logger.catch # Catch any errors
 def main():
@@ -96,7 +108,8 @@ def main():
                         choices=['json', 'csv', 'html', 'txt'], default='json')
     parser.add_argument('-d', '--days', type=int, help='Number of days to fetch', default=7)
     parser.add_argument('-a', '--all', action='store_true', help='Get all employees')
-    parser.add_argument('-s', '--slack', action='store_true', help='Send to Slack')
+    parser.add_argument('--slack', action='store_true', help='Send to Slack')
+    parser.add_argument('--settings', action='store_true', help='Convert settings.json to GitHub secret')
     args = parser.parse_args()
 
     # Set up logging level using environment variable
@@ -104,20 +117,27 @@ def main():
 
     logger.info('Starting FindMyShift Shift Reporter...')
 
+    # Load settings.json
+    logger.info('Loading settings.json...')
+    with open('settings.json', 'r', encoding='utf-8') as file:
+        settings = json.load(file)
+    
     # Get API keys and team ID from environment variable
     logger.info('Setting up environment variables...')
     api_key = os.getenv('API_KEY')
     team_id = os.getenv('TEAM_ID')
 
-    # Load settings.json
-    logger.info('Loading settings.json...')
-    with open('settings.json', 'r', encoding='utf-8') as file:
-        settings = json.load(file)
-
     blacklist = settings.get('blacklist', [])
     logger.debug(f'Blacklist: {blacklist}')
     aliases = settings.get('aliases', {})
     logger.debug(f'Aliases: {aliases}')
+
+    # If --settings flag is set, convert settings.json to GitHub secret
+    if args.settings:
+        secret = convert_settings_to_secret(settings)
+        logger.info('GitHub secret:')
+        print(f'SETTINGS_JSON={secret}')
+        return
 
     # Export as [json|csv|html|text]
     if not os.path.exists('outputs'):
