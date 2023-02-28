@@ -20,8 +20,12 @@ def send_to_slack(slack_token: str, slack_channel: str, data: dict, **kwargs):
         slack_channel (str): Slack channel
         data (dict): Data
     """
+    # Get names and sort alphabetically
+    names = [employee['display_name'] for employee in data]
+    names.sort()
+
     # Convert dict to bulleted list
-    bulleted_list = '\n'.join([f'- {employee["display_name"]}' for employee in data])
+    bulleted_list = '\n'.join([f'- {name}' for name in names])
     slack_message = f'*Employees with empty FindMyShift:*\n{bulleted_list}'
 
     # Setup Slack client
@@ -109,7 +113,8 @@ def main():
     parser.add_argument('-d', '--days', type=int, help='Number of days to fetch', default=7)
     parser.add_argument('-a', '--all', action='store_true', help='Get all employees')
     parser.add_argument('--slack', action='store_true', help='Send to Slack')
-    parser.add_argument('--settings', action='store_true', help='Convert settings.json to GitHub secret')
+    parser.add_argument('--settings', action='store_true', \
+                        help='Convert settings.json to GitHub secret')
     args = parser.parse_args()
 
     # Set up logging level using environment variable
@@ -121,7 +126,7 @@ def main():
     logger.info('Loading settings.json...')
     with open('settings.json', 'r', encoding='utf-8') as file:
         settings = json.load(file)
-    
+
     # Get API keys and team ID from environment variable
     logger.info('Setting up environment variables...')
     api_key = os.getenv('API_KEY')
